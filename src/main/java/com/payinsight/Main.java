@@ -12,7 +12,9 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import javax.xml.transform.stream.StreamSource;
+import java.io.InputStream;
 
+import com.payinsight.data.XmlResourceUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -36,25 +38,29 @@ public class Main {
     // FUNCTIONALITY 1: XML/XSD validation
     public static boolean validateXML(String xmlPath, String xsdPath) {
 
-        try {
-            SchemaFactory factory = SchemaFactory.newInstance(
-                    XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        try (
+                InputStream xmlStream = XmlResourceUtil.open(xmlPath);
+                InputStream xsdStream = XmlResourceUtil.open(xsdPath)
+        ) {
 
-            Schema schema = factory.newSchema(new File(xsdPath));
+            SchemaFactory factory = SchemaFactory.newInstance(
+                    XMLConstants.W3C_XML_SCHEMA_NS_URI
+            );
+
+            Schema schema = factory.newSchema(
+                    new StreamSource(xsdStream)
+            );
 
             Validator validator = schema.newValidator();
 
-            validator.validate(new StreamSource(new File(xmlPath)));
+            validator.validate(new StreamSource(xmlStream));
 
             System.out.println("XML validation successful!");
-            System.out.println("payments.xml respects payments.xsd.");
-
             return true;
 
         } catch (Exception e) {
-            System.out.println("XML validation failed!");
-            System.out.println(e.getMessage());
 
+            System.out.println("XML validation failed: " + e.getMessage());
             return false;
         }
     }

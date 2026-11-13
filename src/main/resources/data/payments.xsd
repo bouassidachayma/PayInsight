@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- Customer definition -->
+    <xs:complexType name="CustomerType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="email" type="xs:string"/>
+            <xs:element name="country" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+    <!-- Merchant definition -->
+    <xs:complexType name="MerchantType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="category" type="xs:string"/>
+            <xs:element name="country" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+    <!-- Terminal definition -->
+    <xs:complexType name="TerminalType">
+        <xs:sequence>
+            <xs:element name="merchantId" type="xs:IDREF"/>
+            <xs:element name="location" type="xs:string"/>
+            <xs:element name="status">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="active"/>
+                        <xs:enumeration value="inactive"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+    <!-- Transaction definition -->
+    <xs:complexType name="TransactionType">
+        <xs:sequence>
+            <xs:element name="customerId" type="xs:IDREF"/>
+            <xs:element name="merchantId" type="xs:IDREF"/>
+            <xs:element name="terminalId" type="xs:IDREF"/>
+
+            <xs:element name="amount">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:decimal">
+                            <xs:attribute name="currency"
+                                          type="xs:string"
+                                          use="required"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="date" type="xs:date"/>
+
+            <xs:element name="status">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="approved"/>
+                        <xs:enumeration value="declined"/>
+                        <xs:enumeration value="pending"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+    <!-- Error definition -->
+    <xs:complexType name="ErrorType">
+        <xs:sequence>
+            <xs:element name="description" type="xs:string"/>
+
+            <xs:element name="severity">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="low"/>
+                        <xs:enumeration value="medium"/>
+                        <xs:enumeration value="high"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+
+        <xs:attribute name="code" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <!-- Root element -->
+    <xs:element name="paymentSystem">
+        <xs:complexType>
+            <xs:sequence>
+
+                <xs:element name="customers">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="customer"
+                                        type="CustomerType"
+                                        maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="merchants">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="merchant"
+                                        type="MerchantType"
+                                        maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="terminals">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="terminal"
+                                        type="TerminalType"
+                                        maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="transactions">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="transaction"
+                                        type="TransactionType"
+                                        maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="errorCodes">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="error"
+                                        type="ErrorType"
+                                        maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

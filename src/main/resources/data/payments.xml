@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<paymentSystem>
+
+    <customers>
+        <customer id="C001">
+            <name>Ahmed Ben Ali</name>
+            <email>ahmed@example.com</email>
+            <country>Tunisia</country>
+        </customer>
+
+        <customer id="C002">
+            <name>Sarah Mansour</name>
+            <email>sarah@example.com</email>
+            <country>Tunisia</country>
+        </customer>
+    </customers>
+
+    <merchants>
+        <merchant id="M001">
+            <name>TechStore</name>
+            <category>Electronics</category>
+            <country>Tunisia</country>
+        </merchant>
+
+        <merchant id="M002">
+            <name>FashionShop</name>
+            <category>Clothing</category>
+            <country>Tunisia</country>
+        </merchant>
+    </merchants>
+
+    <terminals>
+        <terminal id="T001">
+            <merchantId>M001</merchantId>
+            <location>Sfax</location>
+            <status>active</status>
+        </terminal>
+
+        <terminal id="T002">
+            <merchantId>M002</merchantId>
+            <location>Tunis</location>
+            <status>inactive</status>
+        </terminal>
+    </terminals>
+
+    <transactions>
+        <transaction id="TX001">
+            <customerId>C001</customerId>
+            <merchantId>M001</merchantId>
+            <terminalId>T001</terminalId>
+            <amount currency="TND">250.00</amount>
+            <date>2026-10-08</date>
+            <status>approved</status>
+        </transaction>
+
+        <transaction id="TX002">
+            <customerId>C002</customerId>
+            <merchantId>M002</merchantId>
+            <terminalId>T002</terminalId>
+            <amount currency="TND">120.00</amount>
+            <date>2026-10-09</date>
+            <status>declined</status>
+        </transaction>
+
+        <transaction id="TX003">
+            <customerId>C001</customerId>
+            <merchantId>M001</merchantId>
+            <terminalId>T001</terminalId>
+            <amount currency="TND">75.50</amount>
+            <date>2026-10-10</date>
+            <status>approved</status>
+        </transaction>
+    </transactions>
+
+    <errorCodes>
+        <error code="05">
+            <description>Transaction declined by issuer</description>
+            <severity>medium</severity>
+        </error>
+
+        <error code="51">
+            <description>Insufficient funds</description>
+            <severity>medium</severity>
+        </error>
+
+        <error code="96">
+            <description>System malfunction</description>
+            <severity>high</severity>
+        </error>
+    </errorCodes>
+
+</paymentSystem>
