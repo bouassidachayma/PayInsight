@@ -1,8 +1,8 @@
 # PayInsight
 
-### Système de gestion des paiements avec XML, XSD, XPath et services web SOAP
+### Système de gestion des paiements avec XML, XSD, XPath et services web SOAP et REST
 
-Projet académique de développement Java autour de XML, XSD, XPath et des services web SOAP.
+Projet académique de développement Java autour de XML, XSD, XPath et des services web SOAP et REST.
 
 ---
 
@@ -14,10 +14,11 @@ Projet académique de développement Java autour de XML, XSD, XPath et des servi
 4. [Structure du projet](#4-structure-du-projet)
 5. [Partie 1 — Les données (XML, XSD et XPath)](#5-partie-1--les-données-xml-xsd-et-xpath)
 6. [Partie 2 — Le service web SOAP](#6-partie-2--le-service-web-soap)
-7. [Exécution du projet](#7-exécution-du-projet)
-8. [Limites et perspectives](#8-limites-et-perspectives)
-9. [Conclusion](#9-conclusion)
-10. [Avertissement](#10-avertissement)
+7. [Partie 3 — Le service REST](#7-partie-3--le-service-rest)
+8. [Exécution du projet](#8-exécution-du-projet)
+9. [Limites et perspectives](#9-limites-et-perspectives)
+10. [Conclusion](#10-conclusion)
+11. [Avertissement](#11-avertissement)
 
 ---
 
@@ -25,14 +26,15 @@ Projet académique de développement Java autour de XML, XSD, XPath et des servi
 
 **PayInsight** est une application Java qui modélise un système de paiement simplifié. Elle permet de gérer des informations relatives aux clients, commerçants, terminaux de paiement, transactions et codes d'erreur.
 
-Le projet est construit en deux parties qui s'enchaînent :
+Le projet est construit en trois parties qui s'enchaînent :
 
 * **Partie 1 — Les données :** modélisation en XML, définition d'un schéma XSD, validation du document en Java avec JAXP et interrogation des données avec XPath.
-* **Partie 2 — Le service web :** un service SOAP développé avec JAX-WS, qui permet d'accéder à ces mêmes données à distance.
+* **Partie 2 — Le service web SOAP :** un service développé avec JAX-WS, qui permet d'accéder à ces mêmes données à distance.
+* **Partie 3 — Le service REST :** un service développé avec JAX-RS (Jersey), déployé sous forme de WAR sur Tomcat, qui expose les mêmes données en JSON.
 
-L'idée est simple : la partie 1 prépare des données fiables, la partie 2 les met à disposition de clients externes. L'objectif principal est de montrer comment plusieurs technologies peuvent fonctionner ensemble dans une même application.
+L'idée est simple : la partie 1 prépare des données fiables, les parties 2 et 3 les mettent à disposition de clients externes avec deux styles de services différents. L'objectif principal est de montrer comment plusieurs technologies peuvent fonctionner ensemble dans une même application.
 
-**Lien entre les deux parties :** le service SOAP de la partie 2 réutilise le document XML, le schéma XSD et la méthode de validation de la partie 1. Il ne s'agit donc pas de deux applications indépendantes, mais d'un seul projet.
+**Lien entre les parties :** le service SOAP (partie 2) et le service REST (partie 3) réutilisent tous les deux le document XML, le schéma XSD, la méthode de validation et la classe d'accès aux données de la partie 1. Il ne s'agit donc pas de trois applications indépendantes, mais d'un seul projet.
 
 ---
 
@@ -42,8 +44,9 @@ L'idée est simple : la partie 1 prépare des données fiables, la partie 2 les 
 | ------ | --------------------------------------------------------------------------------------------------------------------------------- |
 | 1 | Modéliser un domaine réel en XML, créer un schéma XSD, valider un document XML et interroger ses données avec XPath.              |
 | 2 | Développer un service web SOAP avec JAX-WS, publier le service, consulter son WSDL et tester ses opérations avec SoapUI et JUnit. |
+| 3 | Développer un service web REST avec JAX-RS (Jersey), le déployer sous forme de WAR sur Tomcat et tester ses ressources avec Postman. |
 
-À travers ce projet, nous avons travaillé sur la structuration, la validation, l'exploitation et l'exposition de données à l'aide de différentes technologies Java et XML.
+À travers ce projet, nous avons travaillé sur la structuration, la validation, l'exploitation et l'exposition de données à l'aide de différentes technologies Java, XML et web.
 
 ---
 
@@ -60,6 +63,11 @@ L'idée est simple : la partie 1 prépare des données fiables, la partie 2 les 
 | SOAP                | Protocole d'échange de messages XML                 |
 | JAX-WS              | Développement du service web SOAP                   |
 | JAXB                | Conversion entre objets Java et représentations XML |
+| JAX-RS (Jakarta REST) | Spécification des services web REST               |
+| Jersey              | Implémentation de JAX-RS                            |
+| Jackson             | Conversion des objets Java en JSON                  |
+| Tomcat              | Serveur d'applications (déploiement du WAR)         |
+| Postman             | Test des ressources REST                            |
 | JUnit 4             | Tests unitaires                                     |
 | SoapUI              | Test des opérations SOAP                            |
 | IntelliJ IDEA       | Environnement de développement                      |
@@ -67,16 +75,29 @@ L'idée est simple : la partie 1 prépare des données fiables, la partie 2 les 
 
 ### Dépendances Maven principales
 
-| Dépendance                   | Version | Rôle                         |
-| ---------------------------- | ------- | ---------------------------- |
-| JUnit                        | 4.13.2  | Tests unitaires              |
-| JAX-WS Runtime (`jaxws-rt`)  | 2.3.7   | Exécution du service SOAP    |
-| Jakarta XML Web Services API | 2.3.3   | API des services web         |
-| Javax JWS API                | 1.1     | Annotations des services web |
+| Dépendance                                  | Version | Partie | Rôle                                           |
+| ------------------------------------------- | ------- | ------ | ---------------------------------------------- |
+| JUnit (`junit`)                             | 4.13.2  | 1 et 2 | Tests unitaires                                |
+| `jakarta.xml.ws-api`                        | 2.3.3   | 2      | API des services web SOAP                      |
+| JAX-WS Runtime (`jaxws-rt`)                 | 2.3.7   | 2      | Exécution du service SOAP                      |
+| `javax.jws-api`                             | 1.1     | 2      | Annotations des services web SOAP              |
+| `jakarta.ws.rs-api`                         | 3.1.0   | 3      | API Jakarta REST (JAX-RS)                      |
+| `jersey-container-servlet`                  | 3.1.10  | 3      | Intégration de Jersey dans un conteneur de servlets |
+| `jersey-hk2`                                | 3.1.10  | 3      | Injection de dépendances de Jersey             |
+| `jersey-media-json-jackson`                 | 3.1.10  | 3      | Conversion des objets Java en JSON             |
+| `jakarta.xml.bind-api`                      | 4.0.2   | 3      | API JAXB requise par Jersey 3                  |
+| `jakarta.activation-api`                    | 2.1.3   | 3      | API Activation requise par Jersey 3            |
+| `javax.xml.bind:jaxb-api`                   | 2.3.1   | 2      | JAXB « legacy » conservé pour le service SOAP  |
+| `javax.activation-api`                      | 1.2.0   | 2      | Activation « legacy » conservé pour le service SOAP |
 
-La compilation est configurée avec Java 8 (`release 8`) et l'encodage UTF-8.
+Le projet est compilé en Java 11 (`release 11`) avec l'encodage UTF-8. Son packaging est `war` et l'archive générée s'appelle `PayInsight.war` (`finalName`).
 
-> **Remarque sur les packages :** bien que la dépendance soit nommée `jakarta.xml.ws-api`, la version 2.3.3 utilise encore les anciens packages `javax.*` (par exemple `javax.xml.ws.Endpoint`). Le passage aux packages `jakarta.*` a été introduit avec Jakarta EE 9 et les versions 3.x et 4.x des API. Il est donc normal que le code de ce projet utilise des imports `javax.*`.
+> **Remarque sur les packages :** les deux services web n'utilisent pas le même espace de noms.
+>
+> * Le service **SOAP** (partie 2) utilise les anciens packages `javax.*` (par exemple `javax.xml.ws.Endpoint`, `javax.jws.WebService`), même si la dépendance s'appelle `jakarta.xml.ws-api` : la version 2.3.3 utilise encore `javax.*`.
+> * Le service **REST** (partie 3) utilise les packages `jakarta.*` (par exemple `jakarta.ws.rs.Path`), car Jersey 3 et Jakarta REST 3.1 sont basés sur Jakarta EE 9 ou supérieur.
+>
+> C'est pourquoi le `pom.xml` contient à la fois les bibliothèques JAXB et Activation en version `javax` (pour SOAP) et en version `jakarta` (pour REST).
 
 ---
 
@@ -88,10 +109,6 @@ PayInsight/
 ├── pom.xml
 ├── README.md
 ├── .gitignore
-│
-├── data/
-│   ├── payments.xml
-│   └── payments.xsd
 │
 ├── images/
 │   ├── validation-success.png
@@ -106,28 +123,48 @@ PayInsight/
 │   ├── soap-approved-transactions.png
 │   ├── soap-transactions-above-amount.png
 │   ├── soap-transaction-count.png
-│   └── junit-tests.png
+│   ├── junit-tests.png
+│   ├── rest-architecture.png
+│   ├── maven-package-war.png
+│   ├── rest-get-transaction.png
+│   ├── rest-approved-transactions.png
+│   ├── rest-transactions-above-amount.png
+│   ├── rest-transaction-count.png
+│   ├── rest-transaction-not-found.png
+│   └── rest-negative-amount.png
 │
 └── src/
     ├── main/
-    │   └── java/com/payinsight/
-    │       ├── Main.java
-    │       │
-    │       ├── data/
-    │       │   ├── Transaction.java
-    │       │   └── PaymentDataService.java
-    │       │
-    │       ├── service/
-    │       │   ├── IPaymentService.java
-    │       │   └── PaymentService.java
-    │       │
-    │       └── server/
-    │           └── PayInsightServer.java
+    │   ├── java/com/payinsight/
+    │   │   ├── Main.java
+    │   │   │
+    │   │   ├── data/
+    │   │   │   ├── Transaction.java
+    │   │   │   ├── PaymentDataService.java
+    │   │   │   └── XmlResourceUtil.java
+    │   │   │
+    │   │   ├── service/
+    │   │   │   ├── IPaymentService.java
+    │   │   │   └── PaymentService.java
+    │   │   │
+    │   │   ├── server/
+    │   │   │   └── PayInsightServer.java
+    │   │   │
+    │   │   └── rest/
+    │   │       ├── RestApplication.java
+    │   │       └── TransactionRest.java
+    │   │
+    │   └── resources/
+    │       └── data/
+    │           ├── payments.xml
+    │           └── payments.xsd
     │
     └── test/
         └── java/com/payinsight/
             └── PayInsightTest.java
 ```
+
+Les fichiers `payments.xml` et `payments.xsd` se trouvent dans `src/main/resources/data` afin d'être empaquetés dans le WAR. La classe `XmlResourceUtil` les charge depuis le classpath de l'application (et, à défaut, depuis le système de fichiers).
 
 ### Rôle des principaux fichiers
 
@@ -141,6 +178,9 @@ PayInsight/
 | `IPaymentService.java`    | Définit le contrat et les opérations du service SOAP       |
 | `PaymentService.java`     | Implémente les opérations et contrôle les paramètres       |
 | `PayInsightServer.java`   | Publie le service SOAP                                     |
+| `XmlResourceUtil.java`    | Charge `payments.xml` et `payments.xsd` (classpath, puis fichier) |
+| `RestApplication.java`    | Déclare l'application REST et son chemin de base `/api`    |
+| `TransactionRest.java`    | Expose les ressources REST sur les transactions            |
 | `PayInsightTest.java`     | Contient les tests unitaires JUnit                         |
 | `pom.xml`                 | Configure Maven et les dépendances                         |
 
@@ -909,6 +949,8 @@ Pour chaque opération, le traitement suit les étapes suivantes :
 3. **Parcours :** recherche des transactions correspondant aux critères demandés.
 4. **Conversion :** création des objets Java `Transaction`.
 
+Les fichiers `payments.xml` et `payments.xsd` sont ouverts par `XmlResourceUtil`, qui les cherche d'abord dans le classpath de l'application (ils sont dans `src/main/resources/data`), puis dans le système de fichiers.
+
 La classe `PaymentService` implémente le contrat défini dans `IPaymentService`.
 
 Elle effectue également des contrôles sur les paramètres :
@@ -999,18 +1041,258 @@ BUILD SUCCESS
 
 ---
 
-# 7. Exécution du projet
+# 7. Partie 3 — Le service REST
 
-## 7.1 Prérequis
+La partie 2 exposait les données avec SOAP, un protocole fondé sur des messages XML et sur un contrat WSDL. Cette troisième partie expose les **mêmes données** avec un autre style de service : un service REST, accessible avec de simples requêtes HTTP et qui répond en JSON.
+
+## 7.1 SOAP et REST : deux styles pour les mêmes données
+
+| Critère                  | Service SOAP (partie 2)                         | Service REST (partie 3)                              |
+| ------------------------ | ----------------------------------------------- | ---------------------------------------------------- |
+| Technologie              | JAX-WS                                          | JAX-RS (Jersey)                                      |
+| Format des messages      | XML (enveloppe SOAP)                            | JSON                                                 |
+| Contrat                  | WSDL généré automatiquement                     | URL des ressources et méthodes HTTP                  |
+| Appel                    | Opérations (`getTransaction`, …)                | Ressources (`/transactions/{id}`, …)                 |
+| Gestion des erreurs      | Exceptions Java renvoyées au client SOAP        | Codes HTTP (`200`, `400`, `404`, `500`)              |
+| Déploiement              | `Endpoint.publish()` (port 8086)                | WAR déployé sur Tomcat (port 8081 dans nos tests)    |
+| Outil de test            | SoapUI                                          | Postman                                              |
+
+## 7.2 Architecture
+
+Les deux services s'appuient sur la même classe d'accès aux données, `PaymentDataService`. Avant chaque lecture, `PaymentDataService` appelle `Main.validateXML()` (écrite dans la partie 1) : les deux services ne lisent donc que des données valides.
+
+![Architecture SOAP et REST de PayInsight](images/rest-architecture.png)
+
+Le service REST appelle directement `PaymentDataService` : il ne passe pas par `PaymentService`, qui appartient au service SOAP.
+
+## 7.3 Organisation des classes REST
+
+| Classe               | Responsabilité                                                                 |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `RestApplication`    | Déclare l'application REST, son chemin de base `/api` et enregistre la ressource |
+| `TransactionRest`    | Définit les ressources sur les transactions et les réponses HTTP               |
+| `PaymentDataService` | Réutilisée de la partie 1 : valide le XML et construit les transactions        |
+| `Transaction`        | Réutilisée : objet converti en JSON par Jackson                                |
+| `XmlResourceUtil`    | Réutilisée : charge `payments.xml` et `payments.xsd` dans le WAR               |
+
+### Déclaration de l'application
+
+```java
+@ApplicationPath("/api")
+public class RestApplication extends ResourceConfig {
+
+    public RestApplication() {
+        register(TransactionRest.class);
+    }
+}
+```
+
+`@ApplicationPath("/api")` fixe le chemin de base de l'API. `ResourceConfig` est la classe de configuration de Jersey : on y enregistre les classes de ressources. Aucun fichier `web.xml` n'est nécessaire.
+
+### Extrait de la ressource
+
+```java
+@Path("/transactions")
+@Produces(MediaType.APPLICATION_JSON)
+public class TransactionRest {
+
+    private final PaymentDataService paymentDataService =
+            new PaymentDataService();
+
+    @GET
+    @Path("/{id}")
+    public Response getTransaction(@PathParam("id") String id) {
+        Transaction transaction = paymentDataService.getTransaction(id);
+
+        if (transaction == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"Transaction not found\"}")
+                    .build();
+        }
+        return Response.ok(transaction).build();
+    }
+
+    @GET
+    @Path("/above")
+    public Response getTransactionsAboveAmount(
+            @QueryParam("amount") double amount) {
+        ...
+    }
+}
+```
+
+### Rôle des principales annotations et classes
+
+| Annotation / classe              | Utilisation                                                      |
+| -------------------------------- | ---------------------------------------------------------------- |
+| `@ApplicationPath`               | Définit le chemin de base de l'API (`/api`)                      |
+| `@Path`                          | Définit le chemin d'une classe ou d'une méthode                  |
+| `@GET`                           | La méthode répond à une requête HTTP GET                         |
+| `@Produces`                      | Définit le format de la réponse (`application/json`)             |
+| `@PathParam`                     | Récupère une valeur dans le chemin de l'URL (`{id}`)             |
+| `@QueryParam`                    | Récupère un paramètre de requête (`?amount=100`)                 |
+| `Response`                       | Construit la réponse HTTP (code, contenu)                        |
+| `ResourceConfig`                 | Configuration Jersey de l'application                            |
+
+## 7.4 Ressources exposées
+
+Le service expose quatre ressources, toutes en lecture (méthode `GET`).
+
+| Méthode | URL                                          | Description                                                 | Codes HTTP        |
+| ------- | -------------------------------------------- | ----------------------------------------------------------- | ----------------- |
+| `GET`   | `/api/transactions/{id}`                     | Récupère une transaction à partir de son identifiant        | 200, 404, 500     |
+| `GET`   | `/api/transactions/approved`                 | Récupère toutes les transactions approuvées                 | 200, 500          |
+| `GET`   | `/api/transactions/above?amount=100`         | Récupère les transactions dont le montant dépasse le seuil  | 200, 400, 500     |
+| `GET`   | `/api/transactions/count`                    | Retourne le nombre total de transactions                    | 200, 500          |
+
+L'adresse complète s'obtient en ajoutant le contexte du WAR : par exemple `http://localhost:8081/PayInsight/api/transactions/TX001`.
+
+### Correspondance entre le code Java et l'URL
+
+| Dans le code Java                                      | Dans l'URL                                                |
+| ------------------------------------------------------ | --------------------------------------------------------- |
+| Nom du WAR (`finalName` = `PayInsight`)                | `/PayInsight`                                             |
+| `@ApplicationPath("/api")`                             | `/PayInsight/api`                                         |
+| `@Path("/transactions")`                               | `/PayInsight/api/transactions`                            |
+| `@Path("/{id}")` et `@PathParam("id")`                 | `/PayInsight/api/transactions/TX001`                      |
+| `@Path("/above")` et `@QueryParam("amount")`           | `/PayInsight/api/transactions/above?amount=100`           |
+
+Les chemins fixes `/approved`, `/above` et `/count` sont prioritaires sur le chemin variable `/{id}` : JAX-RS choisit le chemin le plus précis.
+
+## 7.5 Correspondance entre les opérations SOAP et les ressources REST
+
+| Opération SOAP (partie 2)                          | Ressource REST (partie 3)                    |
+| -------------------------------------------------- | -------------------------------------------- |
+| `getTransaction(transactionId)`                    | `GET /api/transactions/{id}`                 |
+| `getApprovedTransactions()`                        | `GET /api/transactions/approved`             |
+| `getTransactionsAboveAmount(minimumAmount)`        | `GET /api/transactions/above?amount=100`     |
+| `getTransactionCount()`                            | `GET /api/transactions/count`                |
+
+## 7.6 Format des réponses JSON
+
+L'objet `Transaction` est converti en JSON par Jackson (`jersey-media-json-jackson`). C'est la même classe que celle utilisée pour le service SOAP, où JAXB la convertit en XML.
+
+Réponse de `GET /api/transactions/TX001` :
+
+```json
+{
+    "id": "TX001",
+    "customerId": "C001",
+    "merchantId": "M001",
+    "terminalId": "T001",
+    "amount": 250.0,
+    "currency": "TND",
+    "date": "2026-10-08",
+    "status": "approved"
+}
+```
+
+Les ressources qui retournent plusieurs transactions renvoient un tableau JSON. La ressource `count` renvoie un objet :
+
+```json
+{
+    "transactionCount": 3
+}
+```
+
+On retrouve les mêmes huit champs, dans le même ordre, que dans la réponse SOAP (`<return>`). La différence est le format : des éléments XML dans une enveloppe SOAP pour la partie 2, un objet JSON pour la partie 3.
+
+## 7.7 Gestion des erreurs
+
+Contrairement au service SOAP, le service REST utilise les codes de statut HTTP pour signaler les erreurs.
+
+| Situation                                              | Code HTTP | Corps de la réponse                                |
+| ------------------------------------------------------ | --------- | -------------------------------------------------- |
+| Transaction trouvée, liste ou comptage                 | `200`     | Objet ou tableau JSON                              |
+| Identifiant inconnu (`TX999`)                          | `404`     | `{"error":"Transaction not found"}`                |
+| Montant négatif (`amount=-10`)                         | `400`     | `{"error":"Amount cannot be negative"}`            |
+| Erreur de lecture ou de validation du XML              | `500`     | `{"error":"Unable to retrieve transaction"}` (ou `transactions`, ou `count`) |
+
+Exemple de contrôle dans `TransactionRest` :
+
+```java
+if (amount < 0) {
+    return Response.status(Response.Status.BAD_REQUEST)
+            .entity("{\"error\":\"Amount cannot be negative\"}")
+            .type(MediaType.APPLICATION_JSON)
+            .build();
+}
+```
+
+## 7.8 Packaging et déploiement (WAR)
+
+Pour que Tomcat puisse déployer l'application, le projet est empaqueté sous forme de WAR.
+
+| Élément du `pom.xml`                          | Rôle                                                              |
+| --------------------------------------------- | ----------------------------------------------------------------- |
+| `<packaging>war</packaging>`                  | Génère une archive WAR au lieu d'un JAR                           |
+| `<finalName>PayInsight</finalName>`           | Nomme l'archive `PayInsight.war`, donc le contexte `/PayInsight`  |
+| `maven-war-plugin` avec `failOnMissingWebXml` à `false` | Permet de se passer de `web.xml` (`@ApplicationPath` suffit) |
+| Dépendances Jersey (3.1.10)                   | Fournissent le moteur REST, l'injection et la conversion JSON     |
+
+Deux conséquences importantes :
+
+* **Tomcat 10 ou supérieur est nécessaire.** Jersey 3 utilise les packages `jakarta.*`, qui ne sont pas compris par Tomcat 9 et les versions précédentes (basées sur `javax.*`).
+* **Les fichiers XML sont dans le WAR.** Comme l'application ne peut pas compter sur un dossier `data/` relatif, `payments.xml` et `payments.xsd` sont placés dans `src/main/resources/data` et chargés par `XmlResourceUtil` depuis le classpath.
+
+Résultat de `mvn package` :
+
+![Construction du WAR avec Maven](images/maven-package-war.png)
+
+## 7.9 Tests avec Postman
+
+Les quatre ressources ont été testées avec Postman, ainsi que deux cas d'erreur.
+
+| Requête                                        | Code HTTP | Résultat obtenu                          |
+| ---------------------------------------------- | --------- | ---------------------------------------- |
+| `GET /api/transactions/TX001`                  | `200 OK`  | Transaction TX001 (250.0 TND, approved)  |
+| `GET /api/transactions/approved`               | `200 OK`  | TX001 et TX003                           |
+| `GET /api/transactions/above?amount=100`       | `200 OK`  | TX001 (250.0 TND) et TX002 (120.0 TND)   |
+| `GET /api/transactions/count`                  | `200 OK`  | `{"transactionCount": 3}`                |
+| `GET /api/transactions/TX999`                  | `404 Not Found` | `{"error": "Transaction not found"}` |
+| `GET /api/transactions/above?amount=-10`       | `400 Bad Request` | `{"error": "Amount cannot be negative"}` |
+
+### Captures d'écran
+
+**1. Récupération d'une transaction**
+
+![Test REST - getTransaction](images/rest-get-transaction.png)
+
+**2. Récupération des transactions approuvées**
+
+![Test REST - transactions approuvées](images/rest-approved-transactions.png)
+
+**3. Récupération des transactions supérieures à un montant**
+
+![Test REST - transactions supérieures à un montant](images/rest-transactions-above-amount.png)
+
+**4. Comptage des transactions**
+
+![Test REST - nombre de transactions](images/rest-transaction-count.png)
+
+**5. Erreur 404 : transaction inconnue**
+
+![Test REST - transaction inconnue](images/rest-transaction-not-found.png)
+
+**6. Erreur 400 : montant négatif**
+
+![Test REST - montant négatif](images/rest-negative-amount.png)
+
+---
+
+# 8. Exécution du projet
+
+## 8.1 Prérequis
 
 Avant d'exécuter le projet, il faut disposer de :
 
-* Un JDK compatible avec la configuration Maven.
+* Un JDK 11 ou supérieur (le projet est compilé en Java 11).
 * IntelliJ IDEA.
 * Maven.
 * SoapUI pour tester les opérations SOAP.
+* Apache Tomcat 10 ou supérieur et Postman pour la partie REST.
 
-## 7.2 Récupération du projet
+## 8.2 Récupération du projet
 
 Pour télécharger le projet depuis GitHub :
 
@@ -1020,7 +1302,7 @@ git clone https://github.com/bouassidachayma/PayInsight.git
 
 Il est également possible de télécharger le projet directement depuis GitHub au format ZIP.
 
-## 7.3 Lancement de la partie 1
+## 8.3 Lancement de la partie 1
 
 1. Ouvrir le projet dans IntelliJ IDEA.
 2. Vérifier que Maven a correctement chargé les dépendances.
@@ -1028,9 +1310,9 @@ Il est également possible de télécharger le projet directement depuis GitHub 
 4. Exécuter la méthode `main()`.
 5. Consulter la console pour vérifier la validation XML/XSD et les résultats XPath.
 
-**Important :** les chemins `data/payments.xml` et `data/payments.xsd` sont relatifs. Il faut donc lancer le programme depuis la racine du projet.
+**Remarque :** les fichiers `payments.xml` et `payments.xsd` se trouvent dans `src/main/resources/data`. Ils sont chargés depuis le classpath par `XmlResourceUtil` : le programme ne dépend donc pas du dossier depuis lequel il est lancé.
 
-## 7.4 Lancement de la partie 2
+## 8.4 Lancement de la partie 2
 
 1. Ouvrir `PayInsightServer.java`.
 2. Exécuter sa méthode `main()`.
@@ -1047,7 +1329,27 @@ Le service est accessible à l'adresse :
 http://localhost:8086/PayInsight/PaymentService
 ```
 
-## 7.5 Test avec SoapUI
+## 8.5 Lancement de la partie 3 (service REST)
+
+1. Construire l'archive WAR avec Maven :
+
+```bash
+mvn clean package
+```
+
+Le fichier `target/PayInsight.war` est généré.
+
+2. Déployer `PayInsight.war` sur Tomcat 10 ou supérieur, en le copiant dans le dossier `webapps` de Tomcat ou en utilisant une configuration Tomcat dans IntelliJ IDEA.
+3. Démarrer Tomcat.
+4. Appeler l'API, par exemple :
+
+```text
+http://localhost:8081/PayInsight/api/transactions/TX001
+```
+
+Dans nos tests, Tomcat écoute sur le port `8081`. Le port par défaut de Tomcat est `8080` : il faut adapter les URL au port configuré.
+
+## 8.6 Test avec SoapUI
 
 1. Ouvrir SoapUI.
 2. Créer un nouveau projet SOAP.
@@ -1058,9 +1360,19 @@ http://localhost:8086/PayInsight/PaymentService
 
 Le serveur doit rester démarré pendant les tests.
 
-## 7.6 Exécution des tests JUnit
+## 8.7 Test avec Postman
 
-Les tests peuvent être lancés depuis IntelliJ IDEA en exécutant la classe `PayInsightTest`.
+1. Ouvrir Postman.
+2. Créer une requête `GET`.
+3. Saisir l'URL d'une ressource, par exemple `http://localhost:8081/PayInsight/api/transactions/approved`.
+4. Ajouter si besoin les paramètres de requête (par exemple `amount=100`).
+5. Envoyer la requête et consulter le code HTTP et la réponse JSON.
+
+Tomcat doit rester démarré pendant les tests.
+
+## 8.8 Exécution des tests JUnit
+
+Les tests peuvent être lancés depuis IntelliJ IDEA en exécutant la classe `PayInsightTest`. Ils couvrent la partie 1 et la partie 2 ; les ressources REST sont testées avec Postman.
 
 Il est également possible d'utiliser Maven :
 
@@ -1070,7 +1382,7 @@ mvn test
 
 ---
 
-# 8. Limites et perspectives
+# 9. Limites et perspectives
 
 Même si le projet fonctionne correctement, plusieurs améliorations peuvent être envisagées.
 
@@ -1080,33 +1392,39 @@ Même si le projet fonctionne correctement, plusieurs améliorations peuvent êt
 * **Performance :** le document XML est validé et analysé à chaque opération. Une stratégie de chargement et de réutilisation des données pourrait améliorer les performances.
 * **Gestion des montants :** le type `double` peut entraîner des imprécisions d'arrondi. Le type `BigDecimal` serait plus adapté aux calculs financiers.
 * **Gestion des erreurs SOAP :** l'utilisation de SOAP Fault permettrait de structurer davantage les erreurs renvoyées aux clients.
+* **Paramètre `amount` du service REST :** s'il est absent, Java utilise la valeur par défaut `0` et la requête renvoie les transactions de montant supérieur à 0, au lieu d'une erreur `400`.
+* **Contrôles dupliqués :** le service SOAP contrôle ses paramètres dans `PaymentService`, tandis que le service REST appelle directement `PaymentDataService` et refait ses propres contrôles dans `TransactionRest`. Une couche de service commune éviterait cette duplication.
+* **Service REST en lecture seule :** seules des requêtes `GET` sont proposées, et les messages d'erreur JSON sont construits à la main sous forme de chaînes.
+* **Tests du service REST :** ils sont manuels (Postman) ; il n'y a pas de tests JUnit automatiques sur `TransactionRest`.
 
 ### Améliorations possibles
 
 * Développer un client Java à l'aide de `wsimport`.
 * Publier le service dans un annuaire UDDI.
 * Remplacer le fichier XML par une base de données.
-* Ajouter des opérations pour créer, modifier et supprimer des transactions.
+* Ajouter des opérations pour créer, modifier et supprimer des transactions (méthodes `POST`, `PUT` et `DELETE` côté REST).
 * Ajouter une authentification pour sécuriser l'accès au service.
 * Ajouter une interface graphique pour faciliter l'utilisation du système.
 
 ---
 
-# 9. Conclusion
+# 10. Conclusion
 
 Le projet **PayInsight** met en pratique plusieurs concepts importants liés à XML, aux services web et au développement Java.
 
 La première partie a permis de modéliser les données de paiement en XML, de définir leur structure avec XSD, de vérifier leur validité et de les interroger avec XPath.
 
-La seconde partie a prolongé ce travail : les mêmes données sont exposées par un service web SOAP, avec un contrat défini avec JAX-WS, un service publié et des opérations testées avec SoapUI et JUnit.
+La deuxième partie a prolongé ce travail : les mêmes données sont exposées par un service web SOAP, avec un contrat défini avec JAX-WS, un service publié et des opérations testées avec SoapUI et JUnit.
 
-L'enchaînement des deux parties montre comment des données structurées peuvent être validées, exploitées, puis rendues accessibles à travers un service web.
+La troisième partie a ajouté un second style de service : un service REST développé avec JAX-RS (Jersey), déployé en WAR sur Tomcat, qui répond en JSON et dont les ressources sont testées avec Postman.
 
-**Les résultats obtenus — quatre opérations SOAP testées et sept tests unitaires réussis — confirment le bon fonctionnement des principales fonctionnalités développées.**
+L'enchaînement des trois parties montre comment des données structurées peuvent être validées, exploitées, puis rendues accessibles à travers plusieurs types de services web, en réutilisant la même couche d'accès aux données.
+
+**Les résultats obtenus — quatre opérations SOAP testées, quatre ressources REST testées et sept tests unitaires réussis — confirment le bon fonctionnement des principales fonctionnalités développées.**
 
 ---
 
-# 10. Avertissement
+# 11. Avertissement
 
 PayInsight est un projet académique utilisant des données de paiement fictives.
 
