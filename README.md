@@ -1065,6 +1065,21 @@ Les deux services s'appuient sur la même classe d'accès aux données, `Payment
 
 Le service REST appelle directement `PaymentDataService` : il ne passe pas par `PaymentService`, qui appartient au service SOAP.
 
+### Diagramme de séquence : récupération d'une transaction
+
+Exemple : `GET /PayInsight/api/transactions/TX001`.
+
+![Diagramme de séquence de la requête REST](images/sequence-rest-gettransaction.png)
+
+Le déroulement est le suivant :
+
+1. Postman envoie la requête à Tomcat, où Jersey choisit la ressource grâce à `@Path` et `@GET`.
+2. Jersey appelle `TransactionRest.getTransaction("TX001")` (l'identifiant arrive par `@PathParam`).
+3. `TransactionRest` appelle `PaymentDataService.getTransaction("TX001")`.
+4. `PaymentDataService` appelle `Main.validateXML()` (partie 1), puis lit la transaction dans `payments.xml`.
+5. L'objet `Transaction` est renvoyé à `TransactionRest`, qui répond `404` si la transaction est introuvable, ou `Response.ok(transaction)` sinon.
+6. Jackson convertit l'objet en JSON et Postman reçoit `200 OK`.
+
 ## 7.3 Organisation des classes REST
 
 | Classe               | Responsabilité                                                                 |
